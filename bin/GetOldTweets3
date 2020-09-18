@@ -37,10 +37,10 @@ GetOldTweets3 --username "barackobama" --since 2015-09-10 --until 2015-09-12 --m
 GetOldTweets3 --username "BarackObama,AngelaMerkeICDU" --usernames-from-file userlist.txt --maxtweets 10
 
 # Example 5 - Get tweets by language:
-GetOldTweets3 --querysearch "bitcoin" --lang cn --maxtweets 10 
+GetOldTweets3 --querysearch "bitcoin" --lang cn --maxtweets 10
 
 # Example 6 - Get tweets by place:
-GetOldTweets3 --querysearch "bitcoin" --near "Berlin, Germany" --within 25km --maxtweets 10 
+GetOldTweets3 --querysearch "bitcoin" --near "Berlin, Germany" --within 25km --maxtweets 10
 
 # Example 7 - Get tweets by geo coordinates:
 GetOldTweets3 --querysearch "museum" --near "55.75, 37.61" --within 40km --maxtweets 10
@@ -95,7 +95,8 @@ def main(argv):
                                               "lang=",
                                               "output=",
                                               "emoji=",
-                                              "debug"))
+                                              "debug",
+                                              "useragent="))
 
         tweetCriteria = got.manager.TweetCriteria()
         outputFileName = "output_got.csv"
@@ -104,6 +105,7 @@ def main(argv):
         usernames = set()
         username_files = set()
         exclude_words_files = set()
+        user_agent = None
         for opt, arg in opts:
             if opt == '--querysearch':
                 tweetCriteria.querySearch = arg
@@ -186,6 +188,10 @@ def main(argv):
             elif opt == '--debug':
                 debug = True
 
+            elif opt == '--useragent':
+                user_agent = arg
+                print('user_agent=', user_agent)
+
         if debug:
             print(' '.join(sys.argv))
             print("GetOldTweets3", got.__version__)
@@ -256,7 +262,7 @@ def main(argv):
                     print(cnt, end=' ', flush=True)
 
             print("Downloading tweets...")
-            got.manager.TweetManager.getTweets(tweetCriteria, receiveBuffer, debug=debug)
+            got.manager.TweetManager.getTweets(tweetCriteria, receiveBuffer, user_agent=user_agent, debug=debug)
 
     except getopt.GetoptError as err:
         print('Arguments parser error, try -h')

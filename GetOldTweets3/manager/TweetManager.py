@@ -22,7 +22,7 @@ class TweetManager:
     ]
 
     @staticmethod
-    def getTweets(tweetCriteria, receiveBuffer=None, bufferLength=100, proxy=None, debug=False):
+    def getTweets(tweetCriteria, receiveBuffer=None, bufferLength=100, proxy=None, debug=False, user_agent=None):
         """Get tweets that match the tweetCriteria parameter
         A static method.
 
@@ -33,11 +33,12 @@ class TweetManager:
         bufferLength: int, the number of tweets to pass to `receiveBuffer' function
         proxy: str, a proxy server to use
         debug: bool, output debug information
+        user_agent: str, if not None, the user-agent to use
         """
         results = []
         resultsAux = []
         cookieJar = http.cookiejar.CookieJar()
-        user_agent = random.choice(TweetManager.user_agents)
+        user_agent = user_agent or random.choice(TweetManager.user_agents)
 
         all_usernames = []
         usernames_per_batch = 20
@@ -118,7 +119,7 @@ class TweetManager:
 
                     results.append(tweet)
                     resultsAux.append(tweet)
-                    
+
                     if receiveBuffer and len(resultsAux) >= bufferLength:
                         receiveBuffer(resultsAux)
                         resultsAux = []
@@ -134,7 +135,7 @@ class TweetManager:
 
         return results
 
-    @staticmethod 
+    @staticmethod
     def getHashtagsAndMentions(tweetPQ):
         """Given a PyQuery instance of a tweet (tweetPQ) getHashtagsAndMentions
         gets the hashtags and mentions from a tweet using the tweet's
@@ -153,7 +154,7 @@ class TweetManager:
                 continue
 
             # Mention anchor tags have a data-mentioned-user-id
-            # attribute. 
+            # attribute.
             if not tagPQ.attr("data-mentioned-user-id") is None:
                 mentions.append("@" + url[1:])
                 continue
@@ -219,7 +220,7 @@ class TweetManager:
             html = match.group(4)
 
             attr = TweetManager.parse_attributes(link)
-            try:   
+            try:
                 if "u-hidden" in attr["class"]:
                     pass
                 elif "data-expanded-url" in attr \
